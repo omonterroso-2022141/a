@@ -1,12 +1,17 @@
 'use stric'
 
 import Post from './post.model.js'
+import Category from '../category/category.model.js'
 
 export const addPost = async(req, res)=>{
     try{
         let { uid } = req.user
         let data = req.body
-        if(!data) return res.status().send({message: 'Post could not be published'})
+        if(!data) 
+            return res.status().send({message: 'Post could not be published'})
+        let category = await Category.findOne({_id:data.category})
+        if(!category)
+            return res.status(404).send({message: 'Category not found'})
         data.user = uid
         let post = new Post(data)
         try{

@@ -29,20 +29,21 @@ export const login = async(req, res)=>{
         let user = await User.findOne({
             $or: [
                 {usernames: username},
-                {email: email}
+                {email: email},
+
             ]
         })
         if(user && await checkPassword(password, user.password)){
-            let loggerdUser = {
+            let loggedUser = {
                 uid: user.id,
                 username: user.username,
                 name: user.name,
                 role: user.role
             }
-            let token = await generateJwt(loggerdUser)
-            return res.send({message: `Welcome ${user.name}`,loggerdUser,token})
+            let token = await generateJwt(loggedUser)
+            return res.send({message: `Welcome ${user.name}`,loggedUser,token})
         }
-        return res.status(401).send({message: 'Please check your details'})   
+        return res.status(401).send({message: 'Check your deta'})   
     }catch(err){
         console.error(err)
         return res.status(500).send({message: 'System error'}) 
@@ -61,7 +62,7 @@ export const update = async(req, res)=>{
         }
         let userCheck = await User.findOne({_id: id})        
         if(!await checkPassword(data.passwordActual, userCheck.password))
-            return res.status(400).send({message: 'Invalid credentials'})
+            return res.status(400).send({message: 'Wrong data'})
         
         data.password = await encrypt(data.password)
         let updateUser = await User.findOneAndUpdate(
